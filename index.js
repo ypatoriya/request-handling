@@ -6,22 +6,41 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-    res.send("Hello")
+    res.send("hello")
 
 })
+
+//for params
+function id(userId) {
+    const user = userData.find(user => user.id === parseInt(userId));
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
+}
+
+//for query
+app.get('/search', (req, res) => {
+    try {
+        const query = req.query.name;
+        const results = userData.filter(user => {
+            return user.name.toLowerCase().includes(query.toLowerCase());
+        });
+
+        res.json(results);
+    } catch (error) {
+        res.send("error");
+    }
+});
+
 
 app.post('/userid', (req, res) => {
 
     try {
-        let {id,dob,email,username,name} = req.body;
-        //id = Number.parseInt(id);
+        let { id, dob, email, username, name } = req.body;
 
-        // if (isNaN(id)) {
-        //     throw new Error("invalid id")
-        // }
-    
-        let resx  = userData.filter((val)=>{
-            if (val.id===id || val.dob ===dob || val.email ===email || val.username ===username || val.name ===name) {
+        let resx = userData.filter((val) => {
+            if (val.id === id || val.dob === dob || val.email === email || val.username === username || val.name === name) {
                 return val
             }
         })
@@ -32,31 +51,17 @@ app.post('/userid', (req, res) => {
     }
 })
 
-
+//using params
+app.get('/user/:id', (req, res) => {
+    try {
+        let resx = id(req.params.id);
+        res.json(resx);
+    } catch (error) {
+        res.send(error.message);
+    }
+});
 
 app.listen(3000, () => {
     console.log(`http://localhost:3000`)
 })
 
-
-// app.get('/user/id:', (req, res) => {
-
-//     try {
-//         let resx = id(req.params.id)
-//         res.json(resx);
-
-//     } catch (error) {
-//         res.send(error.message);
-//     }
-// })
-
-// app.post('/dob', (req, res) => {
-
-//     try {
-//         let resx = dob(req.body.dob)
-//         res.json(resx);
-
-//     } catch (error) {
-//         res.send(error.message);
-//     }
-// })
